@@ -207,6 +207,7 @@ public class SkipListTests {
   public void simpleTest() {
     setup();
     set("hello");
+    System.out.println("Simple test");
     assertTrue(strings.containsKey("hello"));
     assertFalse(strings.containsKey("goodbye"));
   } // simpleTest()

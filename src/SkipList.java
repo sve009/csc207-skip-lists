@@ -168,7 +168,7 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
     ArrayList<SLNode<K, V>> node = this.front;
     for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
-      while (node.get(i).next.get(i) != null && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
+      while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
         node = node.get(i).next;
       }
     }
@@ -191,16 +191,20 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
   public boolean containsKey(K key) {
     ArrayList<SLNode<K, V>> node = this.front;
     for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
-      while (node.get(i).next.get(i) != null && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
+      while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
         node = node.get(i).next;
       }
     }
 
     SLNode<K, V> finalNode = node.get(0);
 
+    System.out.println(finalNode);
+
     if (finalNode == null) {
         return false;
     }
+
+    System.out.println(finalNode.key);
 
     return this.comparator.compare(finalNode.key, key) == 0;
   } // containsKey(K)

@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Random;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Some tests of skip lists.
@@ -65,7 +64,6 @@ public class SkipListTests {
    * Set up everything.  Unfortunately, @BeforeEach doesn't seem
    * to be working, so we do this manually.
    */
-  @BeforeEach
   public void setup() {
     this.ints = new SkipList<Integer, String>((i, j) -> i - j);
     this.strings = new SkipList<String, String>((s, t) -> s.compareTo(t));

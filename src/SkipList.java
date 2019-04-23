@@ -50,6 +50,7 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
    * The current height of the skiplist.
    */
   int height;
+  int actualCurrentHeight;
 
   /**
    * The probability used to determine the height of nodes.
@@ -71,6 +72,7 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
     this.comparator = comparator;
     this.size = 0;
     this.height = INITIAL_HEIGHT;
+    this.actualCurrentHeight = 0;
   } // SkipList(Comparator<K>)
 
   /**
@@ -88,42 +90,68 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
   @Override
   public V set(K key, V value) {
+      //If list is empty
+      if (this.actualCurrentHeight == 0) {
+          System.out.println("Empty");
+          int newLevel = this.randomHeight();
+
+          if (newLevel > this.height) {
+              int diff = newLevel - this.height;
+              for (int i = 0; i < diff; i++) {
+                  this.front.add(null);
+              }
+              this.height = newLevel;
+          } 
+
+          this.actualCurrentHeight = newLevel;
+
+          SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
+          for (int i = 0 ; i < this.actualCurrentHeight; i++) {
+              this.front.set(i, newNode); 
+          }
+          return value;
+      }
+
+    //If list is not empty
     ArrayList<SLNode<K, V>> update = new ArrayList<SLNode<K, V>>();
-    for (int i = 0; i < this.height; i++) {
+    for (int i = 0; i < this.actualCurrentHeight; i++) {
       update.add(null);
     }
 
-    SLNode<K, V> node = this.front.get(this.height - 1);
-
-    for (int i = this.height - 1; i >= 0; i--) {
-      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
-        node = node.next.get(i);
+    ArrayList<SLNode<K, V>> node = this.front;
+    for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
+      while (node.get(i).next.get(i) != null && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
+        node = node.get(i).next;
       }
-      update.set(i, node);
+      if (this.comparator.compare(node.get(i).key, key) < 0) {
+        update.set(i, node.get(i));
+      }
     }
-    node = node.next.get(0);
 
-    if (this.comparator.compare(node.key, key) == 0) {
-      node.value = value;
+    SLNode<K, V> finalNode = node.get(0);
+
+    if (finalNode != null && this.comparator.compare(finalNode.key, key) == 0) {
+      finalNode.value = value;
       return value;
     } else {
       int newLevel = this.randomHeight();
 
-      if (newLevel > this.height) {
-        int diff = newLevel - this.height;
+      if (newLevel > this.actualCurrentHeight) {
+        int diff = newLevel - this.actualCurrentHeight;
         for (int i = 0; i < diff; i++) {
           this.front.add(null);
           update.add(null);
         }
-        this.height = newLevel;
+        this.actualCurrentHeight = newLevel;
       } 
 
       SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
-      for (int i = 0 ; i < this.height; i++) {
+      for (int i = 0 ; i < newLevel; i++) {
         if (update.get(i) != null) {
           newNode.next.set(i, update.get(i).next.get(i));
           update.get(i).next.set(i, newNode);
         } else {
+         newNode.next.set(i, this.front.get(i));
          this.front.set(i, newNode); 
         } 
       }
@@ -140,7 +168,7 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
     SLNode<K, V> node = this.front.get(this.height - 1);
     for (int i = this.height - 1; i >= 0; i--) {
-      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
+        while (node != null && node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
         node = node.next.get(i);
       }
     }
@@ -162,11 +190,19 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
   public boolean containsKey(K key) {
     SLNode<K, V> node = this.front.get(this.height - 1);
     for (int i = this.height - 1; i >= 0; i--) {
-      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
+      if (node == null) {
+          node = this.front.get(i);
+      }
+      while (node != null && node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
         node = node.next.get(i);
+        System.out.println(node);
       }
     }
-    node = node.next.get(1);
+    if (node == null || node.next.get(0) == null) {
+        return false;
+    } else {
+        node = node.next.get(0);
+    }
 
     return this.comparator.compare(node.key, key) == 0;
   } // containsKey(K)

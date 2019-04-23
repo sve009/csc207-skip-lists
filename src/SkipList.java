@@ -166,18 +166,19 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
       throw new NullPointerException("null key");
     } // if
 
-    SLNode<K, V> node = this.front.get(this.height - 1);
-    for (int i = this.height - 1; i >= 0; i--) {
-        while (node != null && node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
-        node = node.next.get(i);
+    ArrayList<SLNode<K, V>> node = this.front;
+    for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
+      while (node.get(i).next.get(i) != null && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
+        node = node.get(i).next;
       }
     }
-    node = node.next.get(1);
 
-    if (node == null || node.key != key) {
+    SLNode<K, V> finalNode = node.get(0);
+
+    if (finalNode == null || finalNode.key != key) {
       return null;
     } else {
-      return node.value;
+      return finalNode.value;
     }
   } // get(K,V)
 
@@ -188,23 +189,20 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
   @Override
   public boolean containsKey(K key) {
-    SLNode<K, V> node = this.front.get(this.height - 1);
-    for (int i = this.height - 1; i >= 0; i--) {
-      if (node == null) {
-          node = this.front.get(i);
+    ArrayList<SLNode<K, V>> node = this.front;
+    for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
+      while (node.get(i).next.get(i) != null && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
+        node = node.get(i).next;
       }
-      while (node != null && node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
-        node = node.next.get(i);
-        System.out.println(node);
-      }
-    }
-    if (node == null || node.next.get(0) == null) {
-        return false;
-    } else {
-        node = node.next.get(0);
     }
 
-    return this.comparator.compare(node.key, key) == 0;
+    SLNode<K, V> finalNode = node.get(0);
+
+    if (finalNode == null) {
+        return false;
+    }
+
+    return this.comparator.compare(finalNode.key, key) == 0;
   } // containsKey(K)
 
   @Override

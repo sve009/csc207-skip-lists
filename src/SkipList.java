@@ -88,8 +88,48 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
   @Override
   public V set(K key, V value) {
+    ArrayList<SLNode<K, V>> update = new ArrayList<SLNode<K, V>>();
+    for (int i = 0; i < this.height; i++) {
+      update.add(null);
+    }
+
+    SLNode<K, V> node = this.front.get(this.height - 1);
+
+    for (int i = this.height - 1; i >= 0; i--) {
+      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
+        node = node.next.get(i);
+      }
+      update.set(i, node);
+    }
+    node = node.next.get(0);
+
+    if (this.comparator.compare(node.key, key) == 0) {
+      node.value = value;
+      return value;
+    } else {
+      int newLevel = this.randomHeight();
+
+      if (newLevel > this.height) {
+        int diff = newLevel - this.height;
+        for (int i = 0; i < diff; i++) {
+          this.front.add(null);
+          update.add(null);
+        }
+        this.height = newLevel;
+      } 
+
+      SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
+      for (int i = 0 ; i < this.height; i++) {
+        if (update.get(i) != null) {
+          newNode.next.set(i, update.get(i).next.get(i));
+          update.get(i).next.set(i, newNode);
+        } else {
+         this.front.set(i, newNode); 
+        } 
+      }
+    }
     // TODO Auto-generated method stub
-    return null;
+    return value;
   } // set(K,V)
 
   @Override
@@ -97,8 +137,20 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
     if (key == null) {
       throw new NullPointerException("null key");
     } // if
-    // TODO Auto-generated method stub
-    return null;
+
+    SLNode<K, V> node = this.front.get(this.height - 1);
+    for (int i = this.height - 1; i >= 0; i--) {
+      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
+        node = node.next.get(i);
+      }
+    }
+    node = node.next.get(1);
+
+    if (node == null || node.key != key) {
+      return null;
+    } else {
+      return node.value;
+    }
   } // get(K,V)
 
   @Override
@@ -108,8 +160,15 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
   @Override
   public boolean containsKey(K key) {
-    // TODO Auto-generated method stub
-    return false;
+    SLNode<K, V> node = this.front.get(this.height - 1);
+    for (int i = this.height - 1; i >= 0; i--) {
+      while (node.next.get(i) != null && this.comparator.compare(node.next.get(i).key, key) < 0) {
+        node = node.next.get(i);
+      }
+    }
+    node = node.next.get(1);
+
+    return this.comparator.compare(node.key, key) == 0;
   } // containsKey(K)
 
   @Override
@@ -164,8 +223,11 @@ public class SkipList<K,V> implements SimpleMap<K,V> {
 
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // TODO Auto-generated method stub
-
+    Iterator<SLNode<K, V>> iter = this.nodes();
+    while (iter.hasNext()) {
+      SLNode<K, V> node = iter.next();
+      action.accept(node.key, node.value);
+    }
   } // forEach
 
   // +----------------------+----------------------------------------

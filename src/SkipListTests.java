@@ -272,9 +272,7 @@ public class SkipListTests {
   @Test
   public void removeEmpty() {
     setup();
-    assertThrows(NoSuchElementException.class, () -> {
-      remove("a");
-    });
+    assertEquals(null, strings.remove("a"));
   } // removeEmpty()
 
   /**

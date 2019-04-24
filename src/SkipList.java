@@ -84,9 +84,77 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
   // +-------------------+-------------------------------------------
   // | SimpleMap methods |
   // +-------------------+
+  
+  private int addNode(K key, V value, ArrayList<ArrayList<SLNode<K, V>>> update) {
+      int newLevel = this.randomHeight();
+
+      if (newLevel > this.height) {
+        int diff = newLevel - this.height;
+        for (int i = 0; i < diff; i++) {
+          this.front.add(null);
+        } // for
+        this.height = newLevel;
+      } // if the new level is greater than the full height
+
+      if (this.actualCurrentHeight < newLevel) {
+          for (int i = 0; i < newLevel - this.actualCurrentHeight; i++) {
+              update.add(this.front);
+          }
+          this.actualCurrentHeight = newLevel;
+      }
+
+      SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
+      for (int i = 0; i < newLevel; i++) {
+          newNode.next.set(i, update.get(i).get(i));
+          update.get(i).set(i, newNode);
+      } // for
+
+      this.size++;
+      return newLevel;
+  }
 
   @Override
   public V set(K key, V value) {
+
+    ArrayList<ArrayList<SLNode<K, V>>> update = new ArrayList<ArrayList<SLNode<K, V>>>();
+    for (int i = 0; i < this.actualCurrentHeight; i++) {
+      update.add(this.front);
+    } // for
+
+    // If the skip list is currently empty
+    if (this.size == 0) {
+        this.addNode(key, value, update); 
+        return value;
+    } // if the skip list is currently empty
+
+    // If list is not empty
+    // Create an ArrayList of references to the first nodes of lesser value for each height
+
+    // Create a reference for the front
+    ArrayList<SLNode<K, V>> node = this.front;
+    for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
+      while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
+        node = node.get(i).next;
+      } // while the next node doesn't have a null value and the key of the next node is less than
+        // key
+      update.set(i, node);
+    } // for
+
+    // Advance one along the bottom (to the next node)
+    SLNode<K, V> finalNode = node.get(0);
+
+    if (finalNode != null && this.comparator.compare(finalNode.key, key) == 0) {
+      finalNode.value = value;
+      return value;
+    } // if you found the same key, change the value at that key
+    else {
+        this.addNode(key, value, update);
+        return value;
+    }
+
+  } // set(K,V)
+
+  public V set2(K key, V value) {
     // If the skip list is currently empty
     if (this.actualCurrentHeight == 0) {
       int newLevel = this.randomHeight();
@@ -205,21 +273,17 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
 
     SLNode<K, V> finalNode = node.get(0);
 
-    System.out.println(finalNode);
-
     if (finalNode == null) {
       return false;
     } // if
-
-    System.out.println(finalNode.key);
 
     return this.comparator.compare(finalNode.key, key) == 0;
   } // containsKey(K)
 
   @Override
   public V remove(K key) {
-    if (this.actualCurrentHeight == 0) {
-      throw new NoSuchElementException("Nothing to remove.");
+    if (this.size == 0) {
+        return null;
     } // if
     // If list is not empty
     // Create an ArrayList of references to the first nodes of lesser value for each height
@@ -253,7 +317,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
       }
     } 
     
-     throw new NoSuchElementException("That key isn't in the skip list.");
+    return null;
   } // remove(K)
 
   @Override

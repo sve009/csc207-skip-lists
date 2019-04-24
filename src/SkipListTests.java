@@ -1,6 +1,7 @@
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -271,10 +272,42 @@ public class SkipListTests {
   @Test
   public void removeEmpty() {
     setup();
-    assertThrows(NullPointerException.class, () -> {
+    assertThrows(NoSuchElementException.class, () -> {
       remove("a");
     });
   } // removeEmpty()
+
+  /**
+   * Another simple test. Will remove correctly return null and leave the skip list unchanged when
+   * we try to remove something that isn't in the skip list but the skip list is non-empty?
+   */
+  @Test
+  public void removeNotThere() {
+    setup();
+    set("a");
+    set("b");
+    remove("c");
+    assertTrue(strings.containsKey("a"));
+    assertTrue(strings.containsKey("b"));
+  } // removeNotThere
+
+  /**
+   * Another simple test. Will the structure allow us to remove everything in it and not crash in
+   * any way?
+   */
+  @Test
+  public void removeAll() {
+    setup();
+    set("a");
+    set("b");
+    remove("a");
+    remove("b");
+    set("c");
+    remove("c");
+    assertFalse(strings.containsKey("a"));
+    assertFalse(strings.containsKey("b"));
+    assertFalse(strings.containsKey("c"));
+  } // removeAll()
 
   // +-----------------+-------------------------------------------------
   // | RandomizedTests |

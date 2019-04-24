@@ -2,6 +2,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
@@ -217,6 +218,9 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
 
   @Override
   public V remove(K key) {
+    if (this.actualCurrentHeight == 0) {
+      throw new NoSuchElementException("Nothing to remove.");
+    } // if
     // If list is not empty
     // Create an ArrayList of references to the first nodes of lesser value for each height
     ArrayList<ArrayList<SLNode<K, V>>> update = new ArrayList<ArrayList<SLNode<K, V>>>();
@@ -234,8 +238,6 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
         update.set(i, node);
     } // for
 
-
-
     // Advance one along the bottom (to the next node)
     SLNode<K, V> finalNode = node.get(0);
 
@@ -249,10 +251,9 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
         this.size--;
         return finalNode.value;
       }
-    } else {
-        //Do whatever when not found
-    }
-    return null;
+    } 
+    
+     throw new NoSuchElementException("That key isn't in the skip list.");
   } // remove(K)
 
   @Override

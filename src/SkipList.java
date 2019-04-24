@@ -85,7 +85,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
   // | SimpleMap methods |
   // +-------------------+
   
-  private int addNode(K key, V value, ArrayList<ArrayList<SLNode<K, V>>> update) {
+  private V addNode(K key, V value, ArrayList<ArrayList<SLNode<K, V>>> update) {
       int newLevel = this.randomHeight();
 
       if (newLevel > this.height) {
@@ -110,7 +110,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
       } // for
 
       this.size++;
-      return newLevel;
+      return value;
   }
 
   @Override
@@ -123,8 +123,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
 
     // If the skip list is currently empty
     if (this.size == 0) {
-        this.addNode(key, value, update); 
-        return value;
+        return this.addNode(key, value, update); 
     } // if the skip list is currently empty
 
     // If list is not empty
@@ -148,90 +147,9 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
       return value;
     } // if you found the same key, change the value at that key
     else {
-        this.addNode(key, value, update);
-        return value;
+        return this.addNode(key, value, update);
     }
 
-  } // set(K,V)
-
-  public V set2(K key, V value) {
-    // If the skip list is currently empty
-    if (this.actualCurrentHeight == 0) {
-      int newLevel = this.randomHeight();
-
-      if (newLevel > this.height) {
-        int diff = newLevel - this.height;
-        for (int i = 0; i < diff; i++) {
-          this.front.add(null);
-        } // for
-        this.height = newLevel;
-      } // if the new level is greater than the full height
-
-      this.actualCurrentHeight = newLevel;
-
-      SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
-      for (int i = 0; i < this.actualCurrentHeight; i++) {
-        this.front.set(i, newNode);
-      } // for
-      return value;
-    } // if the skip list is currently empty
-
-    // If list is not empty
-    // Create an ArrayList of references to the first nodes of lesser value for each height
-    ArrayList<SLNode<K, V>> update = new ArrayList<SLNode<K, V>>();
-    for (int i = 0; i < this.actualCurrentHeight; i++) {
-      update.add(null);
-    } // for
-
-    // Create a reference for the front
-    ArrayList<SLNode<K, V>> node = this.front;
-    for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
-      while (node.get(i) != null && node.get(i).next.get(i) != null
-          && this.comparator.compare(node.get(i).next.get(i).key, key) < 0) {
-        node = node.get(i).next;
-      } // while the next node doesn't have a null value and the key of the next node is less than
-        // key
-      if (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
-        update.set(i, node.get(i));
-      } // if the node's key is less than key
-    } // for
-
-    // Advance one along the bottom (to the next node)
-    SLNode<K, V> finalNode = node.get(0);
-
-    if (finalNode != null && this.comparator.compare(finalNode.key, key) == 0) {
-      finalNode.value = value;
-      return value;
-    } // if you found the same key, change the value at that key
-    else {
-      int newLevel = this.randomHeight();
-
-      if (newLevel > this.actualCurrentHeight) {
-        int diff = newLevel - this.actualCurrentHeight;
-        for (int i = 0; i < diff; i++) {
-          this.front.add(null);
-          update.add(null);
-        } // for
-        this.actualCurrentHeight = newLevel;
-      } // if the new level is greater than the the actual current height
-
-      // Do the actual setting now
-      SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
-
-      for (int i = 0; i < newLevel; i++) {
-        if (update.get(i) != null) {
-          newNode.next.set(i, update.get(i).next.get(i));
-          update.get(i).next.set(i, newNode);
-        } // if the spot you've reached (the next node at level i) isn't null
-        else {
-          newNode.next.set(i, this.front.get(i));
-          this.front.set(i, newNode);
-        } // else the next node at level i is null, add at the front
-      } // for
-    } // else the final node is null or there's no matching key in the skip list (yet), so insert a
-      // new node
-    this.size++;
-    return value;
   } // set(K,V)
 
   @Override

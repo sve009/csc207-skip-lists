@@ -16,18 +16,17 @@ public class SkipListExpt {
     printSL(strings);
     strings.remove(7);
     printSL(strings);
-  }
+    System.out.println(strings.getOperations());
+  } // main(String[])
 
   public static <K, V> void printSL(SkipList<K, V> lst) {
     Iterator<SLNode<K, V>> iter = lst.nodes();
-
     while (iter.hasNext()) {
       SLNode<K, V> node = iter.next();
-
       System.out.print("[" + node.key + ":" + node.value + ":" + node.next.size() + "] ");
-    }
+    } // while
     System.out.println();
-  }
-}
+  } // printSL(SkipList<K, V>)
+} // class SkipListExpt
 
 

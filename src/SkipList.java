@@ -56,6 +56,11 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
    */
   double prob = 0.5;
 
+  /**
+   * An operations counter to check complexity
+   */
+  int operations = 0;
+
   // +--------------+------------------------------------------------
   // | Constructors |
   // +--------------+
@@ -81,37 +86,45 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
     this((k1, k2) -> k1.toString().compareTo(k2.toString()));
   } // SkipList()
 
+  // +-------------+-------------------------------------------------
+  // | Main Method |
+  // +-------------+
+
+  public static void main(String[] args) {
+
+  } // main(string[])
+
   // +-------------------+-------------------------------------------
   // | SimpleMap methods |
   // +-------------------+
-  
+
   private V addNode(K key, V value, ArrayList<ArrayList<SLNode<K, V>>> update) {
-      int newLevel = this.randomHeight();
+    int newLevel = this.randomHeight();
 
-      if (newLevel > this.height) {
-        int diff = newLevel - this.height;
-        for (int i = 0; i < diff; i++) {
-          this.front.add(null);
-        } // for
-        this.height = newLevel;
-      } // if the new level is greater than the full height
-
-      if (this.actualCurrentHeight < newLevel) {
-          for (int i = 0; i < newLevel - this.actualCurrentHeight; i++) {
-              update.add(this.front);
-          }
-          this.actualCurrentHeight = newLevel;
-      }
-
-      SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
-      for (int i = 0; i < newLevel; i++) {
-          newNode.next.set(i, update.get(i).get(i));
-          update.get(i).set(i, newNode);
+    if (newLevel > this.height) {
+      int diff = newLevel - this.height;
+      for (int i = 0; i < diff; i++) {
+        this.front.add(null);
       } // for
+      this.height = newLevel;
+    } // if the new level is greater than the full height
 
-      this.size++;
-      return value;
-  }
+    if (this.actualCurrentHeight < newLevel) {
+      for (int i = 0; i < newLevel - this.actualCurrentHeight; i++) {
+        update.add(this.front);
+      } // for
+      this.actualCurrentHeight = newLevel;
+    } // if
+
+    SLNode<K, V> newNode = new SLNode<K, V>(key, value, newLevel);
+    for (int i = 0; i < newLevel; i++) {
+      newNode.next.set(i, update.get(i).get(i));
+      update.get(i).set(i, newNode);
+    } // for
+
+    this.size++;
+    return value;
+  } // addNode(K, V, ArrayList<ArrayList<SLNode<K, V>>>)
 
   @Override
   public V set(K key, V value) {
@@ -123,7 +136,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
 
     // If the skip list is currently empty
     if (this.size == 0) {
-        return this.addNode(key, value, update); 
+      return this.addNode(key, value, update);
     } // if the skip list is currently empty
 
     // If list is not empty
@@ -133,6 +146,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
     ArrayList<SLNode<K, V>> node = this.front;
     for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
       while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
+        this.operations++;
         node = node.get(i).next;
       } // while the next node doesn't have a null value and the key of the next node is less than
         // key
@@ -147,9 +161,8 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
       return value;
     } // if you found the same key, change the value at that key
     else {
-        return this.addNode(key, value, update);
-    }
-
+      return this.addNode(key, value, update);
+    } // else
   } // set(K,V)
 
   @Override
@@ -161,6 +174,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
     ArrayList<SLNode<K, V>> node = this.front;
     for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
       while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
+        this.operations++;
         node = node.get(i).next;
       } // while
     } // for
@@ -201,7 +215,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
   @Override
   public V remove(K key) {
     if (this.size == 0) {
-        return null;
+      return null;
     } // if
     // If list is not empty
     // Create an ArrayList of references to the first nodes of lesser value for each height
@@ -213,28 +227,30 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
     // Create a reference for the front
     ArrayList<SLNode<K, V>> node = this.front;
     for (int i = this.actualCurrentHeight - 1; i >= 0; i--) {
-        while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
-            node = node.get(i).next;
-        } // while the next node doesn't have a null value and the key of the next node is less than
-        // key
-        update.set(i, node);
+      while (node.get(i) != null && this.comparator.compare(node.get(i).key, key) < 0) {
+        this.operations++;
+        node = node.get(i).next;
+      } // while the next node doesn't have a null value and the key of the next node is less than
+      // key
+      update.set(i, node);
     } // for
 
     // Advance one along the bottom (to the next node)
     SLNode<K, V> finalNode = node.get(0);
+    this.operations++;
 
     if (finalNode != null) {
-       if (finalNode != null && this.comparator.compare(finalNode.key, key) == 0) {
+      if (finalNode != null && this.comparator.compare(finalNode.key, key) == 0) {
         for (int i = 0; i < finalNode.next.size(); i++) {
           if (update.get(i) != null) {
-              update.get(i).set(i, finalNode.next.get(i));
-          }         
+            update.get(i).set(i, finalNode.next.get(i));
+          } // if
         } // for
         this.size--;
         return finalNode.value;
-      }
-    } 
-    
+      } // if
+    } // if
+
     return null;
   } // remove(K)
 
@@ -348,6 +364,10 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
   // +---------+-----------------------------------------------------
   // | Helpers |
   // +---------+
+
+  public int getOperations() {
+    return this.operations;
+  } // getOperations()
 
 } // class SkipList
 

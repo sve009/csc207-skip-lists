@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.Test;
 
 /**
@@ -19,16 +20,15 @@ public class SkipListTests {
   /**
    * Names of some numbers.
    */
-  static final String numbers[] =
-      {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-          "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
-          "sixteen", "seventeen", "eighteen", "nineteen"};
+  static final String numbers[] = {"zero", "one", "two", "three", "four", "five", "six", "seven",
+      "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+      "seventeen", "eighteen", "nineteen"};
 
   /**
    * Names of more numbers.
    */
-  static final String tens[] = {"", "", "twenty", "thirty", "forty", "fifty",
-      "sixty", "seventy", "eighty", "ninety"};
+  static final String tens[] =
+      {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
 
   // +--------+----------------------------------------------------------
   // | Fields |
@@ -61,8 +61,8 @@ public class SkipListTests {
   // +---------+
 
   /**
-   * Set up everything.  Unfortunately, @BeforeEach doesn't seem
-   * to be working, so we do this manually.
+   * Set up everything. Unfortunately, @BeforeEach doesn't seem to be working, so we do this
+   * manually.
    */
   public void setup() {
     this.ints = new SkipList<Integer, String>((i, j) -> i - j);
@@ -74,9 +74,9 @@ public class SkipListTests {
   /**
    * Dump a SkipList to stderr.
    */
-  static <K,V> void dump(SkipList<K,V> map) {
+  static <K, V> void dump(SkipList<K, V> map) {
     System.err.print("[");
-    map.forEach((key,value) -> System.err.println(key + ":" + value + " "));
+    map.forEach((key, value) -> System.err.println(key + ":" + value + " "));
     System.err.println("]");
   } // dump
 
@@ -170,7 +170,7 @@ public class SkipListTests {
   /**
    * Remove a string from the strings list.
    */
-  void add(String str) {
+  void remove(String str) {
     operations.add("remove(\"" + str + "\");");
     strings.remove(str);
   } // remove(String)
@@ -201,7 +201,7 @@ public class SkipListTests {
   // +-------------+
 
   /**
-   * A really simple test.  Add an element and make sure that it's there.
+   * A really simple test. Add an element and make sure that it's there.
    */
   @Test
   public void simpleTest() {
@@ -220,6 +220,61 @@ public class SkipListTests {
     setup();
     assertFalse(strings.containsKey("hello"));
   } // emptyTest()
+
+  /**
+   * Another simple test. Can we successfully remove the first node in the skip list?
+   */
+  @Test
+  public void removeFirst() {
+    setup();
+    set("a");
+    set("b");
+    set("c");
+    remove("a");
+    assertFalse(strings.containsKey("a"));
+  } // removeFirst()
+
+  /**
+   * Another simple test. Can we successfully remove a node in the middle of the skip list?
+   */
+  @Test
+  public void removeMiddle() {
+    setup();
+    set("a");
+    set("b");
+    set("c");
+    remove("b");
+    assertFalse(strings.containsKey("b"));
+    assertTrue(strings.containsKey("a"));
+    assertTrue(strings.containsKey("c"));
+  } // removeMiddle()
+
+  /**
+   * Another simple test. Can we successfully remove the last node in the skip list?
+   */
+  @Test
+  public void removeLast() {
+    setup();
+    set("a");
+    set("b");
+    set("c");
+    remove("c");
+    assertFalse(strings.containsKey("c"));
+    assertTrue(strings.containsKey("a"));
+    assertTrue(strings.containsKey("b"));
+  } // removeLast()
+
+  /**
+   * Another simple test. Will remove correctly throw an exception when we try to remove from an
+   * empty skip list?
+   */
+  @Test
+  public void removeEmpty() {
+    setup();
+    assertThrows(NullPointerException.class, () -> {
+      remove("a");
+    });
+  } // removeEmpty()
 
   // +-----------------+-------------------------------------------------
   // | RandomizedTests |
@@ -289,7 +344,7 @@ public class SkipListTests {
           set(rand);
         } // if it's not already there.
         if (!ints.containsKey(rand)) {
-          log("After adding " + rand + ", contains(" + rand +") fails");
+          log("After adding " + rand + ", contains(" + rand + ") fails");
           ok = false;
         } // if (!ints.contains(rand))
       } // if we add
@@ -298,7 +353,7 @@ public class SkipListTests {
         remove(rand);
         keys.remove((Integer) rand);
         if (ints.containsKey(rand)) {
-          log("After removing " + rand + ", contains(" + rand +") succeeds");
+          log("After removing " + rand + ", contains(" + rand + ") succeeds");
           ok = false;
         } // if ints.contains(rand)
       } // if we remove
@@ -318,7 +373,7 @@ public class SkipListTests {
       fail("Operations failed");
     } // if (!ok)
   } // randomTest()
-  
+
   public static void main(String[] args) {
     SkipListTests slt = new SkipListTests();
     slt.setup();

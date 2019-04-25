@@ -369,6 +369,10 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
     return this.operations;
   } // getOperations()
 
+  public void refreshOperations() {
+    this.operations = 0;
+  } // refreshOperations()
+
 } // class SkipList
 
 

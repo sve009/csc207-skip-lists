@@ -3,6 +3,7 @@ import java.util.Iterator;
 public class SkipListExpt {
   public static void main(String[] args) {
     SkipList<Integer, String> strings = new SkipList<Integer, String>();
+    SkipList<Integer, Integer> integers = new SkipList<Integer, Integer>();
 
     strings.set(5, "Hello");
     printSL(strings);
@@ -17,6 +18,12 @@ public class SkipListExpt {
     strings.remove(7);
     printSL(strings);
     System.out.println(strings.getOperations());
+    
+    for (int i = 0; i < 1000; i++) {
+      integers.set(i, i + 1);
+    } // for
+    
+    
   } // main(String[])
 
   public static <K, V> void printSL(SkipList<K, V> lst) {

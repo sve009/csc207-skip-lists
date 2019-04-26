@@ -3,26 +3,22 @@ Skip Lists Assignment
 
 Some starter code for the skip list assignment.
 
-Note: In the situation where all the values are added onto the end of the list, the correct model seems to be O(n). Notice the scatterplot, which has a correlation coefficient of r = .9996.
+### Analysis
+First, three scatter plots have been created for the set, get, and remove methods.
 
-The data set was:
-  100     500
-  1000    9000
-  10000   225000
-  100000  2400000
-  1000000 34000000
+Next, here is the table used for these plots. It was collected by the SkipListExpt class:
 
-The data for remove was approximately the same (not far enough off to be significant).
+'''text
+       |100     |1000    |10000   |100000  |1000000 |10000000|
+Set    |5       |9       |12      |18      |21      |24      |
+Get    |4       |10      |11      |16      |18      |23      |
+Remove |5       |10      |14      |19      |21      |23      |
+'''
 
-This is pretty interesting because it shows that if the skip list is used to store values in a specific order the efficiency can be either reduced or improved.
+These togather clearly show some kind of logarithmic function as the slope of the function approaches zero as n
+grows larger and large. I would highly reccomend looking at the scatterplots.
 
-In this case we chose to add and remove the values to/from the end, which should be the least efficent use of the set remove methods because they have to traverse both the height and the length of the skip list.
+Coolio. Sams out.
 
-I also ran tests for the best case senario where values are added to the front and values are removed from the front. While the numbers were considerably smaller, it was still surprisingly a linear curve, with r = .9999.
-
-The data set:
-  100     40
-  1000    900
-  10000   30000
-  100000  400000
-  1000000 4700000
+### Sources
+http://www.alcula.com/ --- Used to generate scatteplots

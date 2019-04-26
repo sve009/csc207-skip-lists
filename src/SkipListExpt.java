@@ -19,6 +19,7 @@ public class SkipListExpt {
     printSL(strings);
     System.out.println(strings.getOperations());
 
+    System.out.println("Worst case scenarios");
     for (int j = 0; j < 5; j++) {
         for (int i = 0; i < 100; i++) {
             integers.set(i, i + 1);
@@ -82,6 +83,74 @@ public class SkipListExpt {
         integers.refreshOperations();
 
         for (int i = 999999; i >= 0; i--) {
+            integers.remove(i);
+        }
+        System.out.println("Remove 1000000: " + integers.getOperations());
+    }
+
+    System.out.println("Best case scenarios");
+    for (int j = 0; j < 5; j++) {
+        for (int i = 99; i >= 0; i--) {
+            integers.set(i, i + 1);
+        }
+        System.out.println("Set 100: " + integers.getOperations());
+        integers.refreshOperations();
+
+        for (int i = 0; i < 100; i++) {
+            integers.remove(i);
+        } // for
+        System.out.println("Remove 100: " + integers.getOperations());
+        integers.refreshOperations();
+    }
+
+    for (int j = 0; j < 5; j++) {
+        for (int i = 999; i >= 0; i--) {
+            integers.set(i, i + 1);
+        }
+        System.out.println("Set 1000: " + integers.getOperations());
+        integers.refreshOperations();
+
+        for (int i = 0; i < 1000; i++) {
+            integers.remove(i);
+        } // for
+        System.out.println("Remove 1000: " + integers.getOperations());
+        integers.refreshOperations();
+    }
+
+    for (int j = 0; j < 5; j++) {
+        for (int i = 9999; i >= 0; i--) {
+            integers.set(i, i + 1);
+        }
+        System.out.println("Set 10000: " + integers.getOperations());
+        integers.refreshOperations();
+
+        for (int i = 0; i < 10000; i++) {
+            integers.remove(i);
+        } // for
+        System.out.println("Remove 10000: " + integers.getOperations());
+    }
+
+    for (int j = 0; j < 5; j++) {
+        for (int i = 99999; i >= 0; i--) {
+            integers.set(i, i + 1);
+        } // for
+        System.out.println("Set 100000: " + integers.getOperations());
+        integers.refreshOperations();
+
+        for (int i = 0; i < 100000; i++) {
+            integers.remove(i);
+        }
+        System.out.println("Remove 100000: " + integers.getOperations());
+    }
+
+    for (int j = 0; j < 5; j++) {
+        for (int i = 999999; i >= 0; i--) {
+            integers.set(i, i + 1);
+        } // for
+        System.out.println("Set 1000000: " + integers.getOperations());
+        integers.refreshOperations();
+
+        for (int i = 0; i < 1000000; i++) {
             integers.remove(i);
         }
         System.out.println("Remove 1000000: " + integers.getOperations());

@@ -22,14 +22,14 @@ public class SkipListTests {
    * Names of some numbers.
    */
   static final String numbers[] = {"zero", "one", "two", "three", "four", "five", "six", "seven",
-      "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
-      "seventeen", "eighteen", "nineteen"};
+    "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen"};
 
   /**
    * Names of more numbers.
    */
   static final String tens[] =
-      {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+  {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
 
   // +--------+----------------------------------------------------------
   // | Fields |

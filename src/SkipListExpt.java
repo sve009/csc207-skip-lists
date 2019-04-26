@@ -35,16 +35,16 @@ public class SkipListExpt {
     System.out.println("Testing size " + n);
 
     for (int i = 0; i < n; i++) {
-        integers.set(i, i);
+      integers.set(i, i);
     }
 
     int total = 0;
 
     for (int i = 0; i < 25; i++) {
-        integers.refreshOperations();
-        int num = rand.nextInt(n); 
-        integers.set(num, num);
-        total += integers.getOperations();
+      integers.refreshOperations();
+      int num = rand.nextInt(n); 
+      integers.set(num, num);
+      total += integers.getOperations();
     } 
 
     System.out.println("Average set operation number: " + total / 25); 
@@ -52,22 +52,22 @@ public class SkipListExpt {
     total = 0;
 
     for (int i = 0; i < 25; i++) {
-        integers.refreshOperations();
-        int num = rand.nextInt(n); 
-        integers.get(num);
-        total += integers.getOperations();
+      integers.refreshOperations();
+      int num = rand.nextInt(n); 
+      integers.get(num);
+      total += integers.getOperations();
     } 
 
     System.out.println("Average get operation number: " + total / 25); 
-    
+
     total = 0;
 
     for (int i = 0; i < 25; i++) {
-        integers.refreshOperations();
-        int num = rand.nextInt(n); 
-        integers.remove(num);
-        total += integers.getOperations();
-        integers.set(num, num);
+      integers.refreshOperations();
+      int num = rand.nextInt(n); 
+      integers.remove(num);
+      total += integers.getOperations();
+      integers.set(num, num);
     } 
 
     System.out.println("Average remove operation number: " + total / 25); 

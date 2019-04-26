@@ -149,7 +149,7 @@ public class SkipList<K, V> implements SimpleMap<K, V> {
         this.operations++;
         node = node.get(i).next;
       } // while the next node doesn't have a null value and the key of the next node is less than
-        // key
+      // key
       update.set(i, node);
     } // for
 
